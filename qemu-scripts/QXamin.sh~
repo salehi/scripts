@@ -107,7 +107,7 @@ $ECHO " Quick Xamin nested auto-configure (Called QXamin.sh)"
 $ECHO " Created by Seyyed Muhammed Sadegh Salehi"
 $ECHO " Copyright 2014. Seyyed Muhammed Sadegh Salehi"
 $ECHO " E-Mail : salehi1994@gmail.com"
-$ECHO " All rights reserved. GPLv3"
+$ECHO " All rights reserved."
 seprator
 
 CC $cyan
