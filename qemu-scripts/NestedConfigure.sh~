@@ -53,8 +53,6 @@ CC ${NC}
 
 set -x
 
-QueueW=""
-
 function GetResponseN(){
 	read -r -p "${1} (N/y):" response
 	case $response in
@@ -103,13 +101,13 @@ fi
 # Check for network
 # Disabling automatic network-manager service at all
 CC ${NC}
-if ! [ -f /etc/init/network-manager.override ]; then
-	echo "manual" | sudo tee /etc/init/network-manager.override
-fi
+#if ! [ -f /etc/init/network-manager.override ]; then
+#	echo "manual" | sudo tee /etc/init/network-manager.override
+#fi
 
-CC ${green}
-$ECHO "The Network Manager removed from start up, You can revert this setting by\n removing /etc/init/network-manager.override file."
-CC ${NC}
+#CC ${green}
+#$ECHO "The Network Manager removed from start up, You can revert this setting by\n removing /etc/init/network-manager.override file."
+#CC ${NC}
 
 
 # Go for a reboot
@@ -118,8 +116,8 @@ if [ "$(GetResponsen 'Do you want to reboot now?')" == "y" ]; then
 else
 	CC ${cyan};
 	$ECHO "Getting down the network-manager service."
-	service network-manager stop
-	$QueueW="${QueueW}; network-manager start"
+# DEBUG
+#	service network-manager stop
 	CC ${NC}
 fi
 
@@ -166,9 +164,9 @@ dhclient ${bridge}
 
 $ECHO -n "#!/bin/sh \n\nswitch=${bridge}\n\nif [ -n \$1 ];then\n        tunctl -u '`'whoami'`' -t \$1\n        ip link set \$1 up\n        sleep 2s\n        brctl addif \$1 switch \$1\n        exit 0\nelse\n        echo 'Error: no interface specified'\n        exit 1\nfi\n" | tee /etc/qemu-ifup
 
-$QueueW
 
-QXamin="QXamin.sh"
+
+QXamin="./QXamin.sh"
 QXamin_arg=""
 while getopts  "s:script:q:qx:QXamin:*" flag; do
     case "$flag" in

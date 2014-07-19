@@ -17,7 +17,7 @@ function sepratorL(){
 }
 
 function PING(){
-	ping -R -c 2 -t 100ms -U $1
+	ping -U -R -c 1 -t 100ms $1
 	sepratorL '+' 40
 }
 
@@ -25,7 +25,7 @@ function jobs(){
 	PING 4.2.2.2
 	PING google.com
 	PING 192.168.2.1
-	PING localhost
+#	PING localhost
 }
 
 seprator '*'
