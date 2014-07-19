@@ -171,7 +171,7 @@ QXamin_arg=""
 while getopts  "s:script:q:qx:QXamin:*" flag; do
     case "$flag" in
 		s|script|q|qx|QXamin) $QXamin=$OPTARG;;
-		"*")	$QXamin_arg=$OPTARG;;
+		'*')	$QXamin_arg=$OPTARG;;
 	esac
 done
 if [ -f ${QXamin} ];then

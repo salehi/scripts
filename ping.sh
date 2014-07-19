@@ -17,7 +17,7 @@ function sepratorL(){
 }
 
 function PING(){
-	ping -c 2 -t 100ms -U $1
+	ping -R -c 2 -t 100ms -U $1
 	sepratorL '+' 40
 }
 
