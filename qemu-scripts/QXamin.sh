@@ -44,13 +44,20 @@ function ChangeColor(){
 	sh -c $cmd
 }
 
+function EXIT(){
+	ChangeColor ${NC}
+	exit $1
+}
+
 # ------------------------------------------------------------------------------
 # ------------------------------End Of Colorize---------------------------------
 # ------------------------------------------------------------------------------
+
 Environment="screen"
 SUDO="sudo"
 VirtualRunner="kvm"
 IMG="xamin.img" #Path to the Virtual Hard Disk
+MEM="2G"
 NETWORK_best="-net nic,model=virtio,netdev=nic-0"
 NETWORK_best="${NETWORK_best} -netdev tap,id=nic-0,script=/etc/qemu-ifup"
 net="${NETWORK_best}"
@@ -64,13 +71,15 @@ Spice="" # To do
 Monitor="${VNC}"
 Key="-k en-us"
 
-while getopts  "environ:sudo:k" flag; do
+while getopts  "e:environment:s:sudo:n:network:M:Monitor:k:key:i:image:m:memory" flag; do
     case "$flag" in
-		environ)		$Environment=$OPTARG;;
-        sudo)			$SUDO=$OPTARG;;
-        network)		$net=$OPTARG;;
-        Monitor)		$Monitor=$OPTARG;;
-		k)				$Key="-k ${OPTARG}";;
+		e|environment)	$Environment=$OPTARG;;
+        s|sudo)			$SUDO=$OPTARG;;
+        n|network)		$net=$OPTARG;;
+        M|Monitor)		$Monitor=$OPTARG;;
+		k|key)			$Key="-k ${OPTARG}";;
+		i|image)		$IMG="${OPTARG}"
+		m|memory)		$MEM="${OPTARG}"
     esac
 done
 
@@ -87,3 +96,5 @@ seprator
 
 ChangeColor cyan
 $Environment $SUDO $VirtualRunner -hda $IMG -m $MEM $net $Key $Monitor
+
+EXIT 0
