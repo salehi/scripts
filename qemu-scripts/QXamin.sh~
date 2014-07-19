@@ -72,8 +72,8 @@ done
 
 VNC="-vnc ${VNC_Host}:${VNC_Port},${VNC_Password}"
 
-CC ${LP}
 seprator
+CC ${LP}
 $ECHO " Quick Xamin nested auto-configure (Called QXamin.sh)"
 $ECHO " Created by Seyyed Muhammed Sadegh Salehi"
 $ECHO " Copyright 2014. Seyyed Muhammed Sadegh Salehi"
