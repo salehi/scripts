@@ -119,7 +119,7 @@ else
 	CC ${cyan};
 	$ECHO "Getting down the network-manager service."
 	service network-manager stop
-	$QueueW="${QueueW}; network-manager start"
+	$QueueW="${QueueW} ; service network-manager start"
 	CC ${NC}
 fi
 
