@@ -25,6 +25,7 @@ NC='\e[0m' 				# No Color
 red='\e[0;31m'			# Red
 green='\e[0;32m'		# Green
 LP='\e[1;35m'			# Light Purple
+LG='\e[1;31m'			# Light Green
 cyan='\e[0;36m'
 ECHO="echo -e"
 function CC(){
@@ -57,9 +58,36 @@ Spice="" # To do
 
 Monitor="${VNC}"
 Key="-k en-us"
+MoreConfig=""
+function usage(){
+	(
+	CC ${green}
+	$ECHO "Usage: $0 [options]"
+	$ECHO "Available options:"
+	$ECHO "  -h|--help ------------------>  prints this."
+	$ECHO "  -e|--environment<screen> --->										"
+	$ECHO "                 Specify where the command will be executed.			"
+	$ECHO "                 (Note that \'screen\' is a package.)				"
+	$ECHO "                 You can run the command in the current Environment	"
+	$ECHO "                 by setting it to ''				 				"
+    $ECHO "  -s|--sudo  ------------------>	Specify sudoer, 					"
+	$ECHO "                         Set it to '' in order to run as an ordina-"
+	$ECHO "                         -ry user.									"
+    $ECHO "  -n|--network ----------------> Specifies all of the network option." # To do: Provide some modes internally
+    $ECHO "  -M|--Monitor ----------------> Specifies all of the monitor option."
+	$ECHO "  -k|--key --------------------> Specifies the keyboard language.	"
+	CC ${LG}
+	$ECHO "  -i|--image ------------------> Specifies path to the virtual HD.	"
+	CC ${green}
+	$ECHO "  -m|--memory -----------------> Specifies the amount of V-Memory.	"
+	$ECHO "  -* --------------------------> Just type to pass at the of command."
+	CC ${NC}
+   ) 1>&2
+}
 
-while getopts  "e:environment:s:sudo:n:network:M:Monitor:k:key:i:image:m:memory" flag; do
+while getopts  "e:environment:s:sudo:n:network:M:Monitor:k:key:i:image:m:memory:h:help:*" flag; do
     case "$flag" in
+		h|help)			usage ; EXIT 0;;
 		e|environment)	$Environment=$OPTARG;;
         s|sudo)			$SUDO=$OPTARG;;
         n|network)		$net=$OPTARG;;
@@ -67,6 +95,7 @@ while getopts  "e:environment:s:sudo:n:network:M:Monitor:k:key:i:image:m:memory"
 		k|key)			$Key="-k ${OPTARG}";;
 		i|image)		$IMG="${OPTARG}";;
 		m|memory)		$MEM="${OPTARG}";;
+		'*')			$MoreConfig="${MoreConfig} ${OPTARG}"
     esac
 done
 
@@ -82,6 +111,6 @@ $ECHO " All rights reserved."
 seprator
 
 CC $cyan
-$Environment $SUDO $VirtualRunner -hda $IMG -m $MEM $net $Key $Monitor
+$Environment $SUDO $VirtualRunner -hda $IMG -m $MEM $net $Key $Monitor $MoreConfig
 
 EXIT 0
