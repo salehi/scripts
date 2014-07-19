@@ -53,8 +53,6 @@ CC ${NC}
 
 set -x
 
-QueueW=""
-
 function GetResponseN(){
 	read -r -p "${1} (N/y):" response
 	case $response in
@@ -103,23 +101,23 @@ fi
 # Check for network
 # Disabling automatic network-manager service at all
 CC ${NC}
-if ! [ -f /etc/init/network-manager.override ]; then
-	echo "manual" | sudo tee /etc/init/network-manager.override
-fi
+#if ! [ -f /etc/init/network-manager.override ]; then
+#	echo "manual" | sudo tee /etc/init/network-manager.override
+#fi
 
-CC ${green}
-$ECHO "The Network Manager removed from start up, You can revert this setting by\n removing /etc/init/network-manager.override file."
-CC ${NC}
+#CC ${green}
+#$ECHO "The Network Manager removed from start up, You can revert this setting by\n removing /etc/init/network-manager.override file."
+#CC ${NC}
 
 
 # Go for a reboot
-if [ "`$(GetResponseN 'Do you want to reboot now?')`" == "y" ]; then
+if [ "$(GetResponsen 'Do you want to reboot now?')" == "y" ]; then
 	reboot
 else
 	CC ${cyan};
 	$ECHO "Getting down the network-manager service."
-	service network-manager stop
-	$QueueW="${QueueW} ; service network-manager start"
+# DEBUG
+#	service network-manager stop
 	CC ${NC}
 fi
 
@@ -130,52 +128,30 @@ fi
 
 ifconfig -a| awk '/Link/ { if( $4 == "HWaddr") print $1 }' | tee -a /tmp/interfaces.lst
 
-br_nick="smss1995"
+last_eth=""
 
 for eth in `cat /tmp/interfaces.lst`
 do
-	if [ "${eth: -8}" == "${br_nick}" ];then
-		$ECHO "bridge detected"
-		exist_bridge="true"
-	else
-		if [ "${eth:0:3}" == 'eth' ]; then
-			last_eth="${eth}"
-		fi
+	if [ "${eth:0:3}" == "eth" ];then
 	fi
-	ifdown ${eth} down
-	ifconfig ${eth} down
+#	ifconfig ${eth} down
 done
-
+exit;
 for eth in `cat /tmp/interfaces.lst`
 do
 	if [ "${eth}" != "${last_eth}" ];then
-		ifup ${eth} up
 		ifconfig ${eth} up
 	else
 		ifconfig ${eth} 0.0.0.0 up
 	fi
 done
 
-bridge="${last_eth}${br_nick}"
+bridge="${last_eth}_br"
 
-if [ -z $exist_bridge ]; then
-	brctl addbr ${bridge}
-fi
+read -p "Pause"
+
+brctl addbr ${bridge}
 brctl addif ${bridge} ${last_eth}
 dhclient ${bridge}
 
-$ECHO -n "#!/bin/sh \n\nswitch=${bridge}\n\nif [ -n \$1 ];then\n        tunctl -u '`'whoami'`' -t \$1\n        ip link set \$1 up\n        sleep 2s\n        brctl addif \$1 switch \$1\n        exit 0\nelse\n        echo 'Error: no interface specified'\n        exit 1\nfi\n" | tee /etc/qemu-ifup
-
-$QueueW
-
-QXamin="QXamin.sh"
-QXamin_arg=""
-while getopts  "s:script:q:qx:QXamin:*" flag; do
-    case "$flag" in
-		s|script|q|qx|QXamin) 	$QXamin="$OPTARG";;
-		"*")					$QXamin_arg="$OPTARG";;
-	esac
-done
-if [ -f ${QXamin} ];then
-	bash ${QXamin} ${QXamin_arg}
-fi
+$ECHO -n "#!/bin/sh \n\nswitch=br0\n\nif [ -n '$1' ];then\n        tunctl -u `whoami` -t $1\n        ip link set $1 up\n        sleep 2s\n        brctl addif $switch $1\n        exit 0\nelse\n        echo 'Error: no interface specified'\n        exit 1\nfi\n"

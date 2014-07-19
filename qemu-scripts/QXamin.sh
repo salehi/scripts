@@ -64,7 +64,7 @@ function usage(){
 	CC ${green}
 	$ECHO "Usage: $0 [options]"
 	$ECHO "Available options:"
-	$ECHO "  -h|--help ------------------>  prints this."
+	$ECHO "  --help ------------------>  prints this."
 	$ECHO "  -e|--environment<screen> --->										"
 	$ECHO "                 Specify where the command will be executed.			"
 	$ECHO "                 (Note that \'screen\' is a package.)				"
