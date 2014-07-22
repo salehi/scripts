@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -x
-
 function seprator(){
         for((i=0;i<80;i++))
         do
@@ -67,14 +65,11 @@ function usage(){
 	$ECHO "Usage: $0 [options]"
 	$ECHO "Available options:"
 	$ECHO "  --help 	------------------>  prints this."
-	$ECHO "  -e|--environment<screen> --->										"
-	$ECHO "                 	Specify where the command will be executed.			"
-	$ECHO "                 	(Note that \'screen\' is a package.)				"
-	$ECHO "                 	You can run the command in the current Environment	"
-	$ECHO "                 	by setting it to ''				 				"
-	$ECHO "  -s|--sudo	------------------>	Specify sudoer, 					"
-	$ECHO "                         		Set it to '' in order to run as an ordina-"
-	$ECHO "                         		-ry user.									"
+	$ECHO "  -e|--environment<screen> 	-->  Specify where the command will be executed."
+	$ECHO "			                 	(Note that \'screen\' is a package.)"
+	$ECHO "                 			You can run the command in the current Environment"
+	$ECHO "                 			by setting it to ''"
+	$ECHO "  -s|--sudo	---------------->  Specify sudoer, Set it to '' in order to run as an ordinary user."
 	$ECHO "  -n|--network 	----------------> Specifies all of the network option." # To do: Provide some modes internally
 	$ECHO "  -M|--Monitor 	----------------> Specifies all of the monitor option."
 	$ECHO "  -k|--key 	----------------> Specifies the keyboard language.	"
@@ -89,7 +84,7 @@ function usage(){
    ) 1>&2
 }
 
-while getopts  "e:environment:s:sudo:n:network:M:Monitor:k:key:i:image:m:memory:h:help:c:cdrom:b:boot" flag; do
+while getopts  ":e:environment:s:sudo:n:network:M:Monitor:k:key:i:image:m:memory:c:cdrom:b:boot:h help" flag; do
     case $flag in
 	h|help)		usage ; EXIT 0;;
 	e|environment)	$Environment="$OPTARG";;
@@ -101,6 +96,8 @@ while getopts  "e:environment:s:sudo:n:network:M:Monitor:k:key:i:image:m:memory:
 	m|memory)	$MEM="-m ${OPTARG}";;
 	c|cdrom)	$cdrom="-cdrom ${OPTARG}";;
 	b|boot)		$boot="-boot ${OPTARG}";;
+	:)		"-$OPTARG Requires an aurgument"; EXIT 1;;
+	*)		echo -en " ${red} INVALID Option -> ${OPTARG} \n\t Option error: ${OPTERR} \n\t\t Option Index: ${OPTIND}\n"; EXIT 1;;
     esac
 done
 
@@ -116,6 +113,9 @@ $ECHO " All rights reserved. GPLv3"
 seprator
 
 CC $cyan
+
+set -x
 $SUDO $Environment $VirtualRunner $IMG $MEM $net $Key $Monitor $cdrom $boot
+set +x
 
 EXIT 0
