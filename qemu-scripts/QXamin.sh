@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x
+
 function seprator(){
         for((i=0;i<80;i++))
         do
@@ -44,8 +46,8 @@ function EXIT(){
 Environment="screen"
 SUDO="sudo"
 VirtualRunner="kvm"
-IMG="xamin.img" #Path to the Virtual Hard Disk
-MEM="2G"
+IMG="-hda xamin.img" #Path to the Virtual Hard Disk
+MEM="-m 2G"
 NETWORK_best="-net nic,model=virtio,netdev=nic-0"
 NETWORK_best="${NETWORK_best} -netdev tap,id=nic-0,script=/etc/qemu-ifup"
 net="${NETWORK_best}"
@@ -55,8 +57,8 @@ VNC_Host="0.0.0.0"
 VNC_port="10"
 VNC_Password="password"
 Spice="" # To do
-cdrom="/dev/sr0"
-boot="c"
+cdrom="-cdrom /dev/sr0"
+boot="-boot c"
 Monitor="${VNC}"
 Key="-k en-us"
 function usage(){
@@ -88,15 +90,15 @@ function usage(){
 }
 
 while getopts  "e:environment:s:sudo:n:network:M:Monitor:k:key:i:image:m:memory:h:help:c:cdrom:b:boot" flag; do
-    case "$flag" in
+    case $flag in
 	h|help)		usage ; EXIT 0;;
 	e|environment)	$Environment="$OPTARG";;
         s|sudo)		$SUDO="$OPTARG";;
         n|network)	$net="$OPTARG";;
         M|Monitor)	$Monitor="$OPTARG";;
 	k|key)		$Key="-k ${OPTARG}";;
-	i|image)	$IMG="${OPTARG}";;
-	m|memory)	$MEM="${OPTARG}";;
+	i|image)	$IMG="-hda ${OPTARG}";;
+	m|memory)	$MEM="-m ${OPTARG}";;
 	c|cdrom)	$cdrom="-cdrom ${OPTARG}";;
 	b|boot)		$boot="-boot ${OPTARG}";;
     esac
@@ -114,6 +116,6 @@ $ECHO " All rights reserved. GPLv3"
 seprator
 
 CC $cyan
-$Environment $SUDO $VirtualRunner -hda $IMG -m $MEM $net $Key $Monitor $cdrom $boot
+$SUDO $Environment $VirtualRunner $IMG $MEM $net $Key $Monitor $cdrom $boot
 
 EXIT 0
