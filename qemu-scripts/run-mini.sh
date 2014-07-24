@@ -9,7 +9,7 @@ function seprator(){
 }
 
 seprator
-echo " Xamin nested auto-configure"
+echo " Xamin mini run script"
 echo " Created by Seyyed Muhammed Sadegh Salehi"
 echo " Copyright 2014. Seyyed Muhammed Sadegh Salehi"
 echo " E-Mail : salehi1994@gmail.com"
@@ -30,6 +30,6 @@ sudo sysctl -w net.bridge.bridge-nf-call-arptables=0
 echo "Set iptables physical bridge forwarding option to ACCETP packets"
 sudo iptables -I FORWARD -m physdev --physdev-is-bridged -j ACCEPT
 
-#sudo qemu-system-x86_64 -hda xamin.raw -m 2048 -device e1000,netdev=net0,mac=52:54:00:11:22:33 -netdev tap,id=net0,script=/etc/qemu-ifup -vga std $*
-#sudo qemu-system-x86_64 -hda xamin.raw -m 2048 -net nic,model=virtio,macaddr=52:54:00:11:22:33,netdev=nic-0 -netdev tap,id=nic-0,script=/etc/qemu-ifup,vhost=on
-sudo qemu-system-x86_64 -hda xamin.raw -m 2048 -net nic,model=virtio,macaddr=52:54:00:11:22:33,netdev=nic-0 -netdev tap,id=nic-0,script=/etc/qemu-ifup
+#sudo qemu-system-x86_64 -hda xamin.img -m 2048 -device e1000,netdev=net0,mac=52:54:00:11:22:33 -netdev tap,id=net0,script=/etc/qemu-ifup -vga std $*
+#sudo qemu-system-x86_64 -hda xamin.img -m 2048 -net nic,model=virtio,macaddr=52:54:00:11:22:33,netdev=nic-0 -netdev tap,id=nic-0,script=/etc/qemu-ifup,vhost=on
+sudo qemu-system-x86_64 -hda xamin.img -m 2048 -net nic,model=virtio,macaddr=52:54:00:11:22:33,netdev=nic-0 -netdev tap,id=nic-0,script=/etc/qemu-ifup
