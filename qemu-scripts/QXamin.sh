@@ -44,8 +44,8 @@ function EXIT(){
 Environment="screen"
 SUDO="sudo"
 VirtualRunner="kvm"
-IMG="xamin.img" #Path to the Virtual Hard Disk
-MEM="2G"
+IMG="-hda xamin.img" #Path to the Virtual Hard Disk
+MEM="-m 2G"
 NETWORK_best="-net nic,model=virtio,netdev=nic-0"
 NETWORK_best="${NETWORK_best} -netdev tap,id=nic-0,script=/etc/qemu-ifup"
 net="${NETWORK_best}"
@@ -55,47 +55,49 @@ VNC_Host="0.0.0.0"
 VNC_port="10"
 VNC_Password="password"
 Spice="" # To do
-
+cdrom="-cdrom /dev/sr0"
+boot="-boot c"
 Monitor="${VNC}"
 Key="-k en-us"
-MoreConfig=""
 function usage(){
 	(
 	CC ${green}
 	$ECHO "Usage: $0 [options]"
 	$ECHO "Available options:"
-	$ECHO "  --help ------------------>  prints this."
-	$ECHO "  -e|--environment<screen> --->										"
-	$ECHO "                 Specify where the command will be executed.			"
-	$ECHO "                 (Note that \'screen\' is a package.)				"
-	$ECHO "                 You can run the command in the current Environment	"
-	$ECHO "                 by setting it to ''				 				"
-    $ECHO "  -s|--sudo  ------------------>	Specify sudoer, 					"
-	$ECHO "                         Set it to '' in order to run as an ordina-"
-	$ECHO "                         -ry user.									"
-    $ECHO "  -n|--network ----------------> Specifies all of the network option." # To do: Provide some modes internally
-    $ECHO "  -M|--Monitor ----------------> Specifies all of the monitor option."
-	$ECHO "  -k|--key --------------------> Specifies the keyboard language.	"
+	$ECHO "  --help 	------------------>  prints this."
+	$ECHO "  -e|--environment<screen> 	-->  Specify where the command will be executed."
+	$ECHO "			                 	(Note that \'screen\' is a package.)"
+	$ECHO "                 			You can run the command in the current Environment"
+	$ECHO "                 			by setting it to ''"
+	$ECHO "  -s|--sudo	---------------->  Specify sudoer, Set it to '' in order to run as an ordinary user."
+	$ECHO "  -n|--network 	----------------> Specifies all of the network option." # To do: Provide some modes internally
+	$ECHO "  -M|--Monitor 	----------------> Specifies all of the monitor option."
+	$ECHO "  -k|--key 	----------------> Specifies the keyboard language.	"
 	CC ${LG}
-	$ECHO "  -i|--image ------------------> Specifies path to the virtual HD.	"
+	$ECHO "  -i|--image 	----------------> Specifies path to the virtual HD.	"
 	CC ${green}
-	$ECHO "  -m|--memory -----------------> Specifies the amount of V-Memory.	"
-	$ECHO "  -* --------------------------> Just type to pass at the of command."
+	$ECHO "  -m|--memory 	----------------> Specifies the amount of V-Memory.	"
+	$ECHO "  -c|--cdrom  	----------------> Specifies the path to cdrom (ISO or dev)"
+	$ECHO "  -b|--boot   	----------------> Specifies the boot priotiry, See kvm boot options"
+	
 	CC ${NC}
    ) 1>&2
 }
 
-while getopts  "e:environment:s:sudo:n:network:M:Monitor:k:key:i:image:m:memory:h:help:*" flag; do
-    case "$flag" in
-		h|help)			usage ; EXIT 0;;
-		e|environment)	$Environment=$OPTARG;;
-        s|sudo)			$SUDO=$OPTARG;;
-        n|network)		$net=$OPTARG;;
-        M|Monitor)		$Monitor=$OPTARG;;
-		k|key)			$Key="-k ${OPTARG}";;
-		i|image)		$IMG="${OPTARG}";;
-		m|memory)		$MEM="${OPTARG}";;
-		'*')			$MoreConfig="${MoreConfig} ${OPTARG}"
+while getopts  ":e:environment:s:sudo:n:network:M:Monitor:k:key:i:image:m:memory:c:cdrom:b:boot:h help" flag; do
+    case $flag in
+	h|help)		usage ; EXIT 0;;
+	e|environment)	$Environment="$OPTARG";;
+        s|sudo)		$SUDO="$OPTARG";;
+        n|network)	$net="$OPTARG";;
+        M|Monitor)	$Monitor="$OPTARG";;
+	k|key)		$Key="-k ${OPTARG}";;
+	i|image)	$IMG="-hda ${OPTARG}";;
+	m|memory)	$MEM="-m ${OPTARG}";;
+	c|cdrom)	$cdrom="-cdrom ${OPTARG}";;
+	b|boot)		$boot="-boot ${OPTARG}";;
+	:)		"-$OPTARG Requires an aurgument"; EXIT 1;;
+	*)		echo -en " ${red} INVALID Option -> ${OPTARG} \n\t Option error: ${OPTERR} \n\t\t Option Index: ${OPTIND}\n"; EXIT 1;;
     esac
 done
 
@@ -111,6 +113,9 @@ $ECHO " All rights reserved. GPLv3"
 seprator
 
 CC $cyan
-$Environment $SUDO $VirtualRunner -hda $IMG -m $MEM $net $Key $Monitor $MoreConfig
+
+set -x
+$SUDO $Environment $VirtualRunner $IMG $MEM $net $Key $Monitor $cdrom $boot
+set +x
 
 EXIT 0
