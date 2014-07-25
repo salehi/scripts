@@ -140,6 +140,9 @@ do
 	else
 		if [ "${eth:0:3}" == 'eth' ]; then
 			last_eth="${eth}"
+			if [ -z $first_eth ];then
+				first_eth="${eth}"
+			fi
 		fi
 	fi
 	ifdown ${eth} down
@@ -148,7 +151,7 @@ done
 
 for eth in `cat /tmp/interfaces.lst`
 do
-	if [ "${eth}" != "${last_eth}" ];then
+	if [ "${eth}" != "${first_eth}" ];then
 		ifup ${eth} up
 		ifconfig ${eth} up
 	else
@@ -156,26 +159,14 @@ do
 	fi
 done
 
-bridge="${last_eth}${br_nick}"
+bridge="${first_eth}${br_nick}"
 
 if [ -z $exist_bridge ]; then
 	brctl addbr ${bridge}
 fi
-brctl addif ${bridge} ${last_eth}
+brctl addif ${bridge} ${first_eth}
 dhclient ${bridge}
 
 $ECHO -n "#!/bin/sh \n\nswitch=${bridge}\n\nif [ -n \$1 ];then\n        tunctl -u '`'whoami'`' -t \$1\n        ip link set \$1 up\n        sleep 2s\n        brctl addif \$switch \$1\n        exit 0\nelse\n        echo 'Error: no interface specified'\n        exit 1\nfi\n" | tee /etc/qemu-ifup
 
-$QueueW
-
-QXamin="QXamin.sh"
-QXamin_arg=""
-while getopts  "s:script:q:qx:QXamin:*" flag; do
-    case "$flag" in
-		s|script|q|qx|QXamin) 	$QXamin="$OPTARG";;
-		"*")					$QXamin_arg="$OPTARG";;
-	esac
-done
-if [ -f ${QXamin} ];then
-	bash ${QXamin} ${QXamin_arg}
-fi
+EXIT 0
