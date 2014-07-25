@@ -110,13 +110,11 @@ do
 	if [ "${eth: -9}" == "${br_nick}" ];then
 		$ECHO "bridge detected"
 		exist_bridge="true"
-		bridge="${eth}"
-	else
-		if [ "${eth:0:3}" == 'eth' ]; then
-			last_eth="${eth}"
-			if [ -z $first_eth ];then
-				first_eth="${eth}"
-			fi
+		detected_br_name="${eth}"
+	elif [ "${eth:0:3}" == 'eth' ]; then
+		last_eth="${eth}"
+		if [ -z $first_eth ];then
+			first_eth="${eth}"
 		fi
 	fi
 	ifconfig ${eth} down
