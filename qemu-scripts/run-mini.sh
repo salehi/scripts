@@ -32,4 +32,5 @@ sudo iptables -I FORWARD -m physdev --physdev-is-bridged -j ACCEPT
 
 #sudo qemu-system-x86_64 -hda xamin.img -m 2048 -device e1000,netdev=net0,mac=52:54:00:11:22:33 -netdev tap,id=net0,script=/etc/qemu-ifup -vga std $*
 #sudo qemu-system-x86_64 -hda xamin.img -m 2048 -net nic,model=virtio,macaddr=52:54:00:11:22:33,netdev=nic-0 -netdev tap,id=nic-0,script=/etc/qemu-ifup,vhost=on
-sudo qemu-system-x86_64 -hda xamin.img -m 2048 -net nic,model=virtio,macaddr=52:54:00:11:22:33,netdev=nic-0 -netdev tap,id=nic-0,script=/etc/qemu-ifup
+#sudo qemu-system-x86_64 -hda xamin.img -m 2048 -net nic,model=virtio,macaddr=52:54:00:11:22:33,netdev=nic-0 -netdev tap,id=nic-0,script=/etc/qemu-ifup
+sudo qemu-system-x86_64 -hda ubuntu.raw -m $(( 4 * 1024 )) -net nic,model=virtio,netdev=nic-0 -netdev tap,id=nic-0,script=/etc/qemu-ifup -device e1000,netdev=nic-1 -netdev tap,id=nic-1,script=/etc/qemu-ifup
