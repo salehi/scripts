@@ -51,30 +51,6 @@ $ECHO " All rights reserved. GPLv3"
 seprator
 CC ${NC}
 
-function GetResponseN(){
-	read -r -p "${1} (N/y):" response
-	case $response in
-	[yY][eE][sS]) 
-		echo "y"
-		;;
-	*)
-		echo "n"
-		;;
-	esac
-}
-
-GetResponseY(){
-	read -r -p "${1} (Y/n):" response
-	case $response in
-	[nN][oO]) 
-		echo "n"
-		;;
-	*)
-		echo "y"
-		;;
-	esac
-}
-
 function prerequisties(){
 	CC ${green}
 	$ECHO "Checking for dependencies..."
@@ -151,6 +127,11 @@ fi
 
 brctl addif ${bridge} ${first_eth}
 dhclient ${bridge}
+
+net.ipv4.ip_forward=1
+net.bridge.bridge-nf-call-ip6tables=0
+net.bridge.bridge-nf-call-iptables=0
+net.bridge.bridge-nf-call-arptables=0
 
 
 $ECHO -n "#!/bin/sh \n\nswitch=${bridge}\n\nif [ -n \$1 ];then\n        tunctl -u '`'whoami'`' -t \$1\n        ip link set \$1 up\n        sleep 2s\n        brctl addif \$switch \$1\n        exit 0\nelse\n        echo 'Error: no interface specified'\n        exit 1\nfi\n" | tee /etc/qemu-ifup
