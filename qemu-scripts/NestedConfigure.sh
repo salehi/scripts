@@ -51,10 +51,6 @@ $ECHO " All rights reserved. GPLv3"
 seprator
 CC ${NC}
 
-set -x
-
-QueueW=""
-
 function GetResponseN(){
 	read -r -p "${1} (N/y):" response
 	case $response in
@@ -105,24 +101,10 @@ fi
 CC ${NC}
 if ! [ -f /etc/init/network-manager.override ]; then
 	echo "manual" | sudo tee /etc/init/network-manager.override
-fi
-
-CC ${green}
-$ECHO "The Network Manager removed from start up, You can revert this setting by\n removing /etc/init/network-manager.override file."
-CC ${NC}
-
-
-# Go for a reboot
-if [ "`$(GetResponseN 'Do you want to reboot now?')`" == "y" ]; then
-	reboot
-else
-	CC ${cyan};
-	$ECHO "Getting down the network-manager service."
-	service network-manager stop
-	$QueueW="${QueueW} ; service network-manager start"
+	CC ${green}
+	$ECHO "The Network Manager removed from start up, You can revert this setting by\n removing /etc/init/network-manager.override file."
 	CC ${NC}
 fi
-
 
 if [ -f /tmp/interfaces.lst ];then
 	rm /tmp/interfaces.lst
@@ -130,11 +112,11 @@ fi
 
 ifconfig -a| awk '/Link/ { if( $4 == "HWaddr") print $1 }' | tee -a /tmp/interfaces.lst
 
-br_nick="smss1995"
+br_nick="_smss1995"
 
 for eth in `cat /tmp/interfaces.lst`
 do
-	if [ "${eth: -8}" == "${br_nick}" ];then
+	if [ "${eth: -9}" == "${br_nick}" ];then
 		$ECHO "bridge detected"
 		exist_bridge="true"
 		bridge="${eth}"
@@ -146,23 +128,22 @@ do
 			fi
 		fi
 	fi
-	ifdown ${eth} down
 	ifconfig ${eth} down
 done
+
+echo "********************************************************************************"
 
 for eth in `cat /tmp/interfaces.lst`
 do
 	if [ "${eth}" != "${first_eth}" ];then
-		ifup ${eth} up
 		ifconfig ${eth} up
 	else
 		ifconfig ${eth} 0.0.0.0 up
 	fi
 done
 
-bridge="${first_eth}${br_nick}"
-
 if [ -z $exist_bridge ]; then
+	bridge="${first_eth}${br_nick}"
 	brctl addbr ${bridge}
 else
 	bridge="${detected_br_name}"
