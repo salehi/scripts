@@ -142,9 +142,9 @@ brctl addif ${bridge} ${first_eth}
 dhclient ${bridge}
 
 sysctl -w net.ipv4.ip_forward=1
-sysctl -w net.bridge.bridge-nf-call-ip6tables=0
-sysctl -w net.bridge.bridge-nf-call-iptables=0
-sysctl -w net.bridge.bridge-nf-call-arptables=0
+sysctl -w net.bridge.bridge-nf-call-ip6tables=1
+sysctl -w net.bridge.bridge-nf-call-iptables=1
+sysctl -w net.bridge.bridge-nf-call-arptables=1
 
 
 $ECHO -n "#!/bin/sh \n\nswitch=${bridge}\n\nif [ -n \$1 ];then\n        tunctl -u '`'whoami'`' -t \$1\n        ip link set \$1 up\n        sleep 2s\n        brctl addif \$switch \$1\n        exit 0\nelse\n        echo 'Error: no interface specified'\n        exit 1\nfi\n" | tee /etc/qemu-ifup
