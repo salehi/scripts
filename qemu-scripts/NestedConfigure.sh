@@ -75,11 +75,26 @@ fi
 # Check for network
 # Disabling automatic network-manager service at all
 CC ${NC}
+
+function GetResponseN(){
+	read -r -p "${1} (N/y):" response
+	case $response in
+	[yY][eE][sS]) 
+		echo "y"
+		;;
+	*)
+		echo "n"
+		;;
+	esac
+}
+
 if ! [ -f /etc/init/network-manager.override ]; then
-	echo "manual" | sudo tee /etc/init/network-manager.override
-	CC ${green}
-	$ECHO "The Network Manager removed from start up, You can revert this setting by\n removing /etc/init/network-manager.override file."
-	CC ${NC}
+	if [ "`$(GetResponseN 'Do you want to remove network-manager of startup?')`" == "y" ]; then
+		echo "manual" | sudo tee /etc/init/network-manager.override
+		$ECHO -e "The Network Manager removed from start up, You can revert this setting by\n removing /etc/init/network-manager.override file."
+	else
+		service network-manager stop
+	fi
 fi
 
 if [ -f /tmp/interfaces.lst ];then
