@@ -137,6 +137,7 @@ do
 	if [ "${eth: -8}" == "${br_nick}" ];then
 		$ECHO "bridge detected"
 		exist_bridge="true"
+		bridge="${eth}"
 	else
 		if [ "${eth:0:3}" == 'eth' ]; then
 			last_eth="${eth}"
@@ -163,9 +164,13 @@ bridge="${first_eth}${br_nick}"
 
 if [ -z $exist_bridge ]; then
 	brctl addbr ${bridge}
+else
+	bridge="${detected_br_name}"
 fi
+
 brctl addif ${bridge} ${first_eth}
 dhclient ${bridge}
+
 
 $ECHO -n "#!/bin/sh \n\nswitch=${bridge}\n\nif [ -n \$1 ];then\n        tunctl -u '`'whoami'`' -t \$1\n        ip link set \$1 up\n        sleep 2s\n        brctl addif \$switch \$1\n        exit 0\nelse\n        echo 'Error: no interface specified'\n        exit 1\nfi\n" | tee /etc/qemu-ifup
 
