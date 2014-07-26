@@ -55,7 +55,7 @@ function prerequisties(){
 	CC ${green}
 	$ECHO "Checking for dependencies..."
 	CC ${LG}
-	apt-get install qemu qemu-kvm kvm libvirt-bin bridge-utils #linux-headers-$(uname -r)
+	apt-get install qemu qemu-kvm kvm uml-utilities bridge-utils #linux-headers-$(uname -r)
 	CC ${NC}
 }
 
