@@ -117,16 +117,15 @@ do
 			first_eth="${eth}"
 		fi
 	fi
-	ifconfig ${eth} down
+#	ifconfig ${eth} down
 done
 
 echo "********************************************************************************"
 
 for eth in `cat /tmp/interfaces.lst`
 do
-	if [ "${eth}" != "${first_eth}" ];then
-		ifconfig ${eth} up
-	else
+#	ifconfig ${eth} up
+	if [ "${eth}" == "${first_eth}" ];then
 		ifconfig ${eth} 0.0.0.0 up
 	fi
 done
@@ -139,6 +138,7 @@ else
 fi
 
 brctl addif ${bridge} ${first_eth}
+ifconfig ${bridge} up
 dhclient ${bridge}
 
 sysctl -w net.ipv4.ip_forward=1
