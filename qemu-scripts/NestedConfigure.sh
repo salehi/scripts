@@ -107,15 +107,15 @@ br_nick="_smss1995"
 
 for eth in `cat /tmp/interfaces.lst`
 do
-	if [ "${eth: -9}" == "${br_nick}" ];then
+	if [ -d /sys/class/net/${eth}/bridge/. ];then
 		$ECHO "bridge detected"
 		exist_bridge="true"
 		detected_br_name="${eth}"
 	elif [ "${eth:0:3}" == 'eth' ]; then
-		last_eth="${eth}"
 		if [ -z $first_eth ];then
 			first_eth="${eth}"
 		fi
+		last_eth="${eth}"
 	fi
 #	ifconfig ${eth} down
 done
