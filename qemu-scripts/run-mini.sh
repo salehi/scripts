@@ -35,4 +35,5 @@ sudo iptables -I FORWARD -m physdev --physdev-is-bridged -j ACCEPT
 #sudo qemu-system-x86_64 -hda xamin.img -m 2048 -net nic,model=virtio,macaddr=52:54:00:11:22:33,netdev=nic-0 -netdev tap,id=nic-0,script=/etc/qemu-ifup
 sudo qemu-system-x86_64 -hda ubuntu.raw -m $(( 4 * 1024 )) -net nic,model=virtio,netdev=nic-0 -netdev tap,id=nic-0,script=/etc/qemu-ifup -device e1000,netdev=nic-1 -netdev tap,id=nic-1,script=/etc/qemu-ifup
 
-#sudo qemu-system-x86_64 -device e1000,netdev=net0,mac=52:54:AB:AB:AB:AB -netdev tap,id=net0,script=/etc/qemu-ifup -nic,model=virtio,macaddr=52:54:AB:AB:AB:BB,netdev=nic-0 -netdev tap,id=nic-0,script=/etc/qemu-ifup,vhost=on -vnc localhost:2 -m 512 -hda IMG.qcow2
+#sudo qemu-system-x86_64 -device e1000,netdev=net0,mac=52:54:AB:AB:AB:AB -netdev tap,id=net0,script=/etc/qemu-ifup -net nic,model=virtio,macaddr=52:54:AB:AB:AB:BB,netdev=nic-0 -netdev tap,id=nic-0,script=/etc/qemu-ifup,vhost=on -vnc localhost:2 -m 512 -hda IMG.qcow2
+# screen sudo qemu-system-x86_64 -enable-kvm -cpu core2duo -device e1000,netdev=net0,mac=52:54:AB:AB:AB:AB -netdev tap,id=net0,script=/etc/qemu-ifup -net nic,model=virtio,macaddr=52:54:AB:AB:AB:BB,netdev=nic-0 -netdev tap,id=nic-0,script=/etc/qemu-ifup,vhost=on -vnc localhost:2 -m 512 -hda ~/virtual/xamin.qcow2 
